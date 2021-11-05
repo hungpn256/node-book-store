@@ -1,10 +1,30 @@
 const mysql = require("mysql");
+var connection
+function handleDisconnect() {
+    connection = mysql.createConnection({
+        host: "remotemysql.com",
+        user: "tYttpMxSi4",
+        password: "FM0Q5alF0P",
+        database: "tYttpMxSi4",
+        port: "3306"
+    });
+    // connection = mysql.createConnection({
+    //     host: "localhost",
+    //     user: "root",
+    //     password: "02100120",
+    //     database: "online_store_system",
+    //     port: "3306"
+    // });
+    console.log('connected');
+    connection.on('error', function (err) {
+        console.log('db error', err);
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+            handleDisconnect();                         // lost due to either server restart, or a
+        } else {                                      // connnection idle timeout (the wait_timeout
+            throw err;                                  // server variable configures this)
+        }
+    });
+}
+handleDisconnect()
 
-var connection = mysql.createConnection({
-    host: "remotemysql.com",
-    user: "tYttpMxSi4",
-    password: "FM0Q5alF0P",
-    database: "tYttpMxSi4",
-    port: "3306"
-});
 module.exports = connection;

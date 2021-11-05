@@ -6,14 +6,14 @@ const Customer = function (customer) {
     this.email = customer.email;
 }
 Customer.create = (newCustomer, result) => {
-    sql.query("INSERT INTO custumer(Mobile,Email) VALUES (?, ?)", [newCustomer.mobile, newCustomer.email], (err, res) => {
+    sql.query("INSERT INTO Custumer (Mobile,Email) VALUES (?, ?)", [newCustomer.mobile, newCustomer.email], (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(err, null);
             return;
         }
 
-        console.log("created customer: ", res.insertId, { ...newCustomer, id: res.insertId, });
+        console.log("created customer: ", { ...newCustomer, id: res.insertId, });
         result(null, { ...newCustomer, id: res.insertId });
     });
 };
