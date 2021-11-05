@@ -5,7 +5,7 @@ function Account(account) {
     this.password = account.password;
 }
 Account.create = (account, result) => {
-    sql.query("INSERT INTO Account (CustumerID,Username,Password) VALUES (?,?,?)", [account.customerID, account.username, account.password], (err, res) => {
+    sql.query("INSERT INTO Account (customerID,username,password) VALUES (?,?,?)", [account.customerID, account.username, account.password], (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(err, null);
@@ -14,6 +14,21 @@ Account.create = (account, result) => {
 
         console.log("created customer: ", { ...account, id: res.insertId });
         result(null, { ...account, id: res.insertId });
+    });
+};
+Account.findByUserNamePassword = (account, result) => {
+    sql.query("SELECT * FROM Account WHERE username = ? AND password = ?", [account.username, account.password], (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(err, null);
+            return;
+        }
+        if (res.length) {
+            console.log("found customer: ", res[0]);
+            result(null, res[0]);
+            return;
+        }
+        result({ kind: "not_found" }, null);
     });
 };
 module.exports = Account;

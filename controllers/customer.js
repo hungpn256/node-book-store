@@ -2,7 +2,10 @@ const Account = require("../models/account.js");
 const Address = require("../models/address.js");
 const Customer = require("../models/customer.js");
 const Fullname = require("../models/fullName.js");
+const jwt = require('jsonwebtoken');
+const keys = require('../config/keys');
 
+const { secret, tokenLife } = keys.jwt;
 // Create and Save a new Customer
 exports.create = (req, res) => {
     try {
@@ -67,6 +70,80 @@ exports.create = (req, res) => {
             }
         });
 
+    }
+    catch (err) {
+        console.log('err', err);
+        res.send(err)
+    }
+};
+exports.login = (req, res) => {
+    try {
+        // Validate request
+        if (!req.body) {
+            res.status(400).send({
+                message: "Content can not be empty!"
+            });
+        }
+        let customer = {}
+        let account = new Account({ username: req.body.username, password: req.body.password })
+        Account.findByUserNamePassword(account, (err, data) => {
+            if (err)
+                res.status(500).send({
+                    message:
+                        err.message || "Sai tên đăng nhập, mật khẩu"
+                });
+            else {
+                account = data;
+                console.log(data, 'data login');
+                Customer.findByCustomerID(data.customerID, (err, data) => {
+                    if (err)
+                        res.status(500).send({
+                            message:
+                                err.message || "Sai tên đăng nhập, mật khẩu"
+                        });
+                    else {
+                        customer = data;
+                        customer.account = account;
+                        console.log(customer, 'customer login');
+                    }
+                })
+
+                Fullname.findByCustomerID(data.customerID, (err, data) => {
+                    if (err)
+                        res.status(500).send({
+                            message:
+                                err.message || "Sai tên đăng nhập, mật khẩu"
+                        });
+                    else {
+                        customer.fullName = data;
+                        console.log(customer, 'customer login');
+                    }
+                })
+                Address.findByCustomerID(data.customerID, (err, data) => {
+                    if (err)
+                        res.status(500).send({
+                            message:
+                                err.message || "Sai tên đăng nhập, mật khẩu"
+                        });
+                    else {
+                        customer.address = data;
+
+                        const payload = {
+                            id: customer.id
+                        };
+                        console.log(payload, secret, tokenLife, 'customer login');
+                        jwt.sign(payload, secret, { expiresIn: tokenLife }, (err, token) => {
+                            res.status(200).json({
+                                success: true,
+                                token: `Bearer ${token}`,
+                                customer: customer
+                            })
+                        })
+                    }
+                })
+
+            }
+        })
     }
     catch (err) {
         console.log('err', err);
