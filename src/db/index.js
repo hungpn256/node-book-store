@@ -1,13 +1,19 @@
 const mysql = require("mysql");
 var connection
 function handleDisconnect() {
-    connection = mysql.createConnection({
+    connection = process.env.NODE_ENV === 'production' ? mysql.createConnection({
         host: "remotemysql.com",
         user: "tYttpMxSi4",
         password: "FM0Q5alF0P",
         database: "tYttpMxSi4",
         port: "3306"
-    });
+    }) : mysql.createConnection({
+        host: "localhost",
+        user: "root",
+        password: "02100120",
+        database: "online_store_system",
+        port: "3306"
+    });;
     // connection = mysql.createConnection({
     //     host: "localhost",
     //     user: "root",
