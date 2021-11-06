@@ -14,7 +14,7 @@ Account.create = (account) => {
             }
 
             console.log("created customer: ", { ...account, id: res.insertId });
-            resolve(null, { ...account, id: res.insertId });
+            resolve({ ...account, id: res.insertId });
         });
     })
 

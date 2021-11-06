@@ -42,7 +42,7 @@ exports.create = async (req, res) => {
     }
     catch (err) {
         console.log('err', err);
-        res.send(err)
+        res.status(400).send(err)
     }
 };
 exports.login = async (req, res) => {
@@ -77,7 +77,7 @@ exports.login = async (req, res) => {
     }
     catch (err) {
         console.log('err', err);
-        res.send(err)
+        res.status(400).send(err)
     }
 
 };
