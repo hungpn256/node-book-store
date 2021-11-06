@@ -10,7 +10,6 @@ Account.create = (account) => {
             if (err) {
                 console.log("error: ", err);
                 reject(err, null);
-                return;
             }
 
             console.log("created customer: ", { ...account, id: res.insertId });
@@ -25,12 +24,10 @@ Account.findByUserNamePassword = (account) => {
             if (err) {
                 console.log("error: ", err);
                 reject(err);
-                return;
             }
             if (res.length) {
                 console.log("found customer: ", res[0]);
                 resolve(res[0]);
-                return;
             }
             reject({ kind: "not_found" });
         });

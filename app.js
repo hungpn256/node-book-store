@@ -8,13 +8,10 @@ var indexRouter = require('./src/routes/index');
 var authRouter = require('./src/routes/auth');
 var bookRouter = require('./src/routes/book');
 var cors = require('cors');
-const connect = require('./src/db/index');
+// const connect = require('./src/db/index');
 var app = express();
 
-connect.connect(function (err) {
-    if (err) throw err;
-    console.log("Connected!!!")
-});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
