@@ -1,4 +1,4 @@
-const BookItem = require('../models/BookItem.js')
+const BookItem = require('../models/bookItem.js')
 exports.getAll = (req, res) => {
     try {
         // Validate request
