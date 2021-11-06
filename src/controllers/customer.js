@@ -64,7 +64,44 @@ exports.login = async (req, res) => {
         customer.fullName = fullName;
         customer.account = account;
         const payload = {
-            id: customer.id
+            id: account.id
+        };
+        jwt.sign(payload, secret, { expiresIn: tokenLife }, (err, token) => {
+            res.status(200).json({
+                success: true,
+                token: `Bearer ${token}`,
+                customer: customer
+            })
+        })
+
+    }
+    catch (err) {
+        console.log('err', err);
+        res.status(400).send(err)
+    }
+
+};
+exports.getMe = async (req, res) => {
+    try {
+        // Validate request
+        if (!req.body) {
+            res.status(400).send({
+                message: "Content can not be empty!"
+            });
+        }
+        let customer = {}
+
+        let account = new Account({ username: req.body.username, password: req.body.password })
+        account = await Account.findByID(req.customer.account.id)
+        customer = await Customer.findByCustomerID(account.customerID)
+
+        let fullName = await Fullname.findByCustomerID(account.customerID)
+        let address = await Address.findByCustomerID(account.customerID)
+        customer.address = address;
+        customer.fullName = fullName;
+        customer.account = account;
+        const payload = {
+            id: account.id
         };
         jwt.sign(payload, secret, { expiresIn: tokenLife }, (err, token) => {
             res.status(200).json({

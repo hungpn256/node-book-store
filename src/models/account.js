@@ -34,4 +34,20 @@ Account.findByUserNamePassword = (account) => {
     })
 
 };
+Account.findByID = (id) => {
+    return new Promise((resolve, reject) => {
+        sql.query("SELECT * FROM Account WHERE id = ?", [id], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                reject(err);
+            }
+            if (res.length) {
+                console.log("found customer: ", res[0]);
+                resolve(res[0]);
+            }
+            reject({ kind: "not_found" });
+        });
+    })
+
+};
 module.exports = Account;
