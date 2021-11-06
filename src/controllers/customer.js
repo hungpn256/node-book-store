@@ -7,7 +7,7 @@ const keys = require('../config/keys');
 
 const { secret, tokenLife } = keys.jwt;
 // Create and Save a new Customer
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
     try {
         // Validate request
         if (!req.body) {
@@ -15,68 +15,37 @@ exports.create = (req, res) => {
                 message: "Content can not be empty!"
             });
         }
-        console.log(req.body.email);
-        // Create a Customer
+
         let customer = new Customer({
             email: req.body.email,
             mobile: req.body.mobile,
         });
 
         // Save Customer in the database
-        Customer.create(customer, (err, data) => {
-            if (err)
-                res.status(500).send({
-                    message:
-                        err.message || "Some error occurred while creating the Customer."
-                });
-            else {
-                customer = data;
-                console.log(customer, 'data');
-                let account = new Account({ ...req.body.account, customerID: customer.id })
-                console.log(account);
-                Account.create(account, (err, data) => {
-                    if (err)
-                        res.status(500).send({
-                            message:
-                                err.message || "Some error occurred while creating the account."
-                        });
-                    else customer.account = data;
-                })
+        customer = await Customer.create(customer)
+        let account = new Account({ ...req.body.account, customerID: customer.id })
+        account = await Account.create(account)
+        customer.account = account;
 
-                let address = new Address({ ...req.body.address, customerID: customer.id })
-                console.log(address)
-                Address.create(address, (err, data) => {
-                    if (err)
-                        res.status(500).send({
-                            message:
-                                err.message || "Some error occurred while creating the address."
-                        });
-                    else customer.address = data;
-                })
-                let fullName = new Fullname({ ...req.body.fullName, customerID: customer.id })
-                console.log(fullName)
-                Fullname.create(fullName, (err, data) => {
-                    if (err)
-                        res.status(500).send({
-                            message:
-                                err.message || "Some error occurred while creating the fullName."
-                        });
-                    else {
-                        customer.fullName = data;
-                        res.send(customer)
-                    }
-                })
-                console.log('success');
-            }
-        });
+        let address = new Address({ ...req.body.address, customerID: customer.id })
+        console.log(address)
+        address = await Address.create(address)
+        customer.address = address
 
+        let fullName = new Fullname({ ...req.body.fullName, customerID: customer.id })
+        console.log(fullName)
+        fullName = await Fullname.create(fullName)
+        customer.fullName = fullName
+
+        res.send(customer)
+        console.log('success');
     }
     catch (err) {
         console.log('err', err);
         res.send(err)
     }
 };
-exports.login = (req, res) => {
+exports.login = async (req, res) => {
     try {
         // Validate request
         if (!req.body) {
@@ -86,64 +55,25 @@ exports.login = (req, res) => {
         }
         let customer = {}
         let account = new Account({ username: req.body.username, password: req.body.password })
-        Account.findByUserNamePassword(account, (err, data) => {
-            if (err)
-                res.status(500).send({
-                    message:
-                        err.message || "Sai tên đăng nhập, mật khẩu"
-                });
-            else {
-                account = data;
-                console.log(data, 'data login');
-                Customer.findByCustomerID(data.customerID, (err, data) => {
-                    if (err)
-                        res.status(500).send({
-                            message:
-                                err.message || "Sai tên đăng nhập, mật khẩu"
-                        });
-                    else {
-                        customer = data;
-                        customer.account = account;
-                        console.log(customer, 'customer login');
-                    }
-                })
+        account = await Account.findByUserNamePassword(account)
+        customer = await Customer.findByCustomerID(account.customerID)
 
-                Fullname.findByCustomerID(data.customerID, (err, data) => {
-                    if (err)
-                        res.status(500).send({
-                            message:
-                                err.message || "Sai tên đăng nhập, mật khẩu"
-                        });
-                    else {
-                        customer.fullName = data;
-                        console.log(customer, 'customer login');
-                    }
-                })
-                Address.findByCustomerID(data.customerID, (err, data) => {
-                    if (err)
-                        res.status(500).send({
-                            message:
-                                err.message || "Sai tên đăng nhập, mật khẩu"
-                        });
-                    else {
-                        customer.address = data;
-
-                        const payload = {
-                            id: customer.id
-                        };
-                        console.log(payload, secret, tokenLife, 'customer login');
-                        jwt.sign(payload, secret, { expiresIn: tokenLife }, (err, token) => {
-                            res.status(200).json({
-                                success: true,
-                                token: `Bearer ${token}`,
-                                customer: customer
-                            })
-                        })
-                    }
-                })
-
-            }
+        let fullName = await Fullname.findByCustomerID(account.customerID)
+        let address = await Address.findByCustomerID(account.customerID)
+        customer.address = address;
+        customer.fullName = fullName;
+        customer.account = account;
+        const payload = {
+            id: customer.id
+        };
+        jwt.sign(payload, secret, { expiresIn: tokenLife }, (err, token) => {
+            res.status(200).json({
+                success: true,
+                token: `Bearer ${token}`,
+                customer: customer
+            })
         })
+
     }
     catch (err) {
         console.log('err', err);

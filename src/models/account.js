@@ -4,31 +4,37 @@ function Account(account) {
     this.username = account.username;
     this.password = account.password;
 }
-Account.create = (account, result) => {
-    sql.query("INSERT INTO Account (customerID,username,password) VALUES (?,?,?)", [account.customerID, account.username, account.password], (err, res) => {
-        if (err) {
-            console.log("error: ", err);
-            result(err, null);
-            return;
-        }
+Account.create = (account) => {
+    return new Promise((resolve, reject) => {
+        sql.query("INSERT INTO Account (customerID,username,password) VALUES (?,?,?)", [account.customerID, account.username, account.password], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                reject(err, null);
+                return;
+            }
 
-        console.log("created customer: ", { ...account, id: res.insertId });
-        result(null, { ...account, id: res.insertId });
-    });
+            console.log("created customer: ", { ...account, id: res.insertId });
+            resolve(null, { ...account, id: res.insertId });
+        });
+    })
+
 };
-Account.findByUserNamePassword = (account, result) => {
-    sql.query("SELECT * FROM Account WHERE username = ? AND password = ?", [account.username, account.password], (err, res) => {
-        if (err) {
-            console.log("error: ", err);
-            result(err, null);
-            return;
-        }
-        if (res.length) {
-            console.log("found customer: ", res[0]);
-            result(null, res[0]);
-            return;
-        }
-        result({ kind: "not_found" }, null);
-    });
+Account.findByUserNamePassword = (account) => {
+    return new Promise((resolve, reject) => {
+        sql.query("SELECT * FROM Account WHERE username = ? AND password = ?", [account.username, account.password], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                reject(err);
+                return;
+            }
+            if (res.length) {
+                console.log("found customer: ", res[0]);
+                resolve(res[0]);
+                return;
+            }
+            reject({ kind: "not_found" });
+        });
+    })
+
 };
 module.exports = Account;

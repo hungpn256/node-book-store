@@ -6,31 +6,37 @@ const Fullname = function (fullName) {
     this.midName = fullName.midName;
     this.lastName = fullName.lastName;
 }
-Fullname.create = (fullName, result) => {
-    sql.query("INSERT INTO Fullname (customerID,firstName,midName,lastName) VALUES (?,?,?,?)", [fullName.customerID, fullName.firstName, fullName.midName, fullName.lastName], (err, res) => {
-        if (err) {
-            console.log("error: ", err);
-            result(err, null);
-            return;
-        }
+Fullname.create = (fullName) => {
+    return new Promise((resolve, reject) => {
+        sql.query("INSERT INTO Fullname (customerID,firstName,midName,lastName) VALUES (?,?,?,?)", [fullName.customerID, fullName.firstName, fullName.midName, fullName.lastName], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                reject(err);
+                return;
+            }
 
-        console.log("created customer: ", res.insertId, { ...fullName, id: res.insertId, });
-        result(null, { ...fullName, id: res.insertId });
-    });
+            console.log("created customer: ", res.insertId, { ...fullName, id: res.insertId, });
+            resolve({ ...fullName, id: res.insertId });
+        });
+    })
+
 };
-Fullname.findByCustomerID = (id, result) => {
-    sql.query("SELECT * FROM fullname WHERE fullname.customerID = ?", [id], (err, res) => {
-        if (err) {
-            console.log("error: ", err);
-            result(err, null);
-            return;
-        }
-        if (res.length) {
-            console.log("found customer: ", res[0]);
-            result(null, res[0]);
-            return;
-        }
-        result({ kind: "not_found" }, null);
-    });
+Fullname.findByCustomerID = (id) => {
+    return new Promise((resolve, reject) => {
+        sql.query("SELECT * FROM fullname WHERE fullname.customerID = ?", [id], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                reject(err);
+                return;
+            }
+            if (res.length) {
+                console.log("found customer: ", res[0]);
+                resolve(res[0]);
+                return;
+            }
+            reject({ kind: "not_found" });
+        });
+    })
+
 };
 module.exports = Fullname;
