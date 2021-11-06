@@ -23,7 +23,7 @@ Fullname.create = (fullName) => {
 };
 Fullname.findByCustomerID = (id) => {
     return new Promise((resolve, reject) => {
-        sql.query("SELECT * FROM fullname WHERE fullname.customerID = ?", [id], (err, res) => {
+        sql.query("SELECT * FROM Fullname WHERE Fullname.customerID = ?", [id], (err, res) => {
             if (err) {
                 console.log("error: ", err);
                 reject(err);
