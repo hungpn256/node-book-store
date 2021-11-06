@@ -1,20 +1,20 @@
 const mysql = require("mysql");
 var connection
 function handleDisconnect() {
-    // connection = mysql.createConnection({
-    //     host: "remotemysql.com",
-    //     user: "tYttpMxSi4",
-    //     password: "FM0Q5alF0P",
-    //     database: "tYttpMxSi4",
-    //     port: "3306"
-    // });
     connection = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "02100120",
-        database: "online_store_system",
+        host: "remotemysql.com",
+        user: "tYttpMxSi4",
+        password: "FM0Q5alF0P",
+        database: "tYttpMxSi4",
         port: "3306"
     });
+    // connection = mysql.createConnection({
+    //     host: "localhost",
+    //     user: "root",
+    //     password: "02100120",
+    //     database: "online_store_system",
+    //     port: "3306"
+    // });
     var del = connection._protocol._delegateError;
     connection._protocol._delegateError = function (err, sequence) {
         if (err.fatal) {
