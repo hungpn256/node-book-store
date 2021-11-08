@@ -90,9 +90,8 @@ exports.getMe = async (req, res) => {
             });
         }
         let customer = {}
-
-        let account = new Account({ username: req.body.username, password: req.body.password })
-        account = await Account.findByID(req.customer.account.id)
+        console.log(req.customer.account.id, 'ád')
+        const account = await Account.findByID(req.customer.account.id)
         customer = await Customer.findByCustomerID(account.customerID)
 
         let fullName = await Fullname.findByCustomerID(account.customerID)

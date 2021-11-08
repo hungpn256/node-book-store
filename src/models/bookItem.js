@@ -62,7 +62,31 @@ BookItem.getById = (id) => {
                     return;
                 } else {
                     if (res.length) {
-                        resolve(res[0])
+                        const item = res[0];
+                        resolve({
+                            id: item.id,
+                            image: item.image,
+                            price: item.price,
+                            discount: item.discount,
+                            book: {
+                                id: item.bookID,
+                                barcode: item.barcode,
+                                title: item.title,
+                                summary: item.summary,
+                                pages: item.pages,
+                                language: item.language,
+                                publisher: {
+                                    id: item.publisherID,
+                                    name: item.publisherName,
+                                    address: item.address
+                                },
+                                author: {
+                                    id: item.authorID,
+                                    name: item.authorName,
+                                    biography: item.biography
+                                }
+                            }
+                        })
                         return;
                     }
                     reject({ kind: "not_found" });

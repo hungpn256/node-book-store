@@ -2,8 +2,8 @@ const BookItem = require('../models/bookItem.js')
 exports.getAll = async (req, res) => {
     try {
         // Validate request
-        const res = await BookItem.getAll();
-        res.send(res)
+        const data = await BookItem.getAll();
+        res.send(data)
     }
     catch (err) {
         console.log('err', err);
