@@ -2,7 +2,7 @@ const sql = require("../db/index");
 const BookItem = require("./bookItem");
 const CartItem = function (cartItem) {
     this.id = cartItem.id
-    this.cardID = cartItem.cardID
+    this.cartID = cartItem.cartID
     this.quantity = cartItem.quantity;
     this.bookItemID = cartItem.bookItemID;
 }
@@ -40,11 +40,39 @@ CartItem.getCardItemByCardID = (cardID) => {
                     ...item,
                     bookItem: result[i]
                 }))
-
                 resolve(res);
             }
             resolve([]);
         });
     })
+}
+CartItem.checkCartExist = (cardItem) => {
+    return new Promise((resolve, reject) => {
+        sql.query("select * from CartItem where cartID = ? and bookItemID = ?", [cardItem.cardID,cardItem.bookItemID], async (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                reject(err, null);
+                return;
+            }
+            if (res.length) {
+                console.log("result: ", res)
+                resolve(res[0]);
+            }
+            resolve(null);
+        });
+    })
+}
+
+CartItem.update = (cartUpdate) => {
+    return new Promise ((resolve,reject) => {sql.query("UPDATE CartItem  as cart set cart.quantity  = ? , cart.cartID = ? where cart.id = ?", [cartUpdate.quantity,cartUpdate.cartID,cartUpdate.id],(err,res) =>{
+        if(err){
+            reject(err,null);
+            return;
+        }
+        else{
+            console.log(res,'update');
+            resolve('ok');
+        }
+    })})
 }
 module.exports = CartItem;
