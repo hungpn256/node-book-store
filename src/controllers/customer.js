@@ -64,7 +64,10 @@ exports.login = async (req, res) => {
         customer.fullName = fullName;
         customer.account = account;
         const payload = {
-            id: account.id
+            id: customer.id,
+            account: {
+                id: account.id
+            }
         };
         jwt.sign(payload, secret, { expiresIn: tokenLife }, (err, token) => {
             res.status(200).json({

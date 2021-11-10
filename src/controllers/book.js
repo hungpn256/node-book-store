@@ -21,5 +21,4 @@ exports.getItemById = async (req, res) => {
         console.log('err', err);
         res.status(400).send(err)
     }
-
 };
