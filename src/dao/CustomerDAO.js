@@ -143,5 +143,18 @@ class CustomerDAO {
         })
 
     };
+    getAllOrderByCustomerId = (customerID) => {
+        return new Promise((resolve, reject) => {
+            sql.query("SELECT o.* FROM `Order` o left join Cart c on o.cartID = c.id where c.customerID = ?", [customerID], (err, res) => {
+                if (err) {
+                    console.log("error: ", err);
+                    reject(err);
+                    return;
+                }
+                resolve(res || []);
+            });
+        })
+
+    };
 }
 module.exports = new CustomerDAO()

@@ -1,4 +1,3 @@
-const sql = require("../db/index");
 function Address(address) {
     this.number = address.number;
     this.street = address.street;

@@ -6,3 +6,4 @@ function Book(book) {
     this.pages = book.pages;
     this.languge = book.languge;
 }
+module.exports = Book;

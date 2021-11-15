@@ -7,10 +7,8 @@ const jwt = require('jsonwebtoken');
 const keys = require('../config/keys');
 
 const { secret, tokenLife } = keys.jwt;
-// Create and Save a new Customer
 exports.create = async (req, res) => {
     try {
-        // Validate request
         if (!req.body) {
             res.status(400).send({
                 message: "Content can not be empty!"

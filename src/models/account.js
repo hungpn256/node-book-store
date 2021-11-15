@@ -1,4 +1,3 @@
-const sql = require("../db/index");
 class Account {
     customerID;
     username;

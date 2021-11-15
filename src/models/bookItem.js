@@ -4,6 +4,4 @@ function BookItem(bookItem) {
     this.price = bookItem.price;
     this.discount = bookItem.discount;
 }
-
-
 module.exports = BookItem

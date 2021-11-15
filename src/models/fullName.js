@@ -1,4 +1,3 @@
-const sql = require("../db/index");
 const Fullname = function (fullName) {
     console.log("fullName", fullName);
     this.customerID = fullName.customerID;

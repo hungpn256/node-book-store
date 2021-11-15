@@ -1,4 +1,3 @@
-const sql = require("../db/index");
 const Customer = function (customer) {
     console.log("==", customer);
     this.id = customer.id

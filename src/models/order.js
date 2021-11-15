@@ -1,4 +1,3 @@
-const sql = require("../db/index");
 function Order(order) {
     this.shipmenID = order.shipmenID;
     this.paymentID = order.paymentID;

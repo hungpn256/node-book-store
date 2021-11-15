@@ -1,7 +1,7 @@
 const sql = require("../db/index");
 const BookDAO = require("./BookDAO");
-class CartItemDAO {
-    create = (cartItem) => {
+class OrderDAO {
+    createCartItem = (cartItem) => {
         return new Promise((resolve, reject) => {
             sql.query("INSERT INTO CartItem (cartID,quantity,bookItemID) VALUES (?,?,?)", [cartItem.cardID, cartItem.quantity, cartItem.bookItemID], async (err, res) => {
                 if (err) {
@@ -18,7 +18,7 @@ class CartItemDAO {
         })
     }
 
-    getCardItemByCardID = (cardID) => {
+    getCartItemByCartID = (cardID) => {
         return new Promise((resolve, reject) => {
             sql.query("select * from CartItem where cartID = ?", [cardID], async (err, res) => {
                 if (err) {
@@ -57,7 +57,7 @@ class CartItemDAO {
         })
     }
 
-    update = (cartUpdate) => {
+    updateCartItem = (cartUpdate) => {
         return new Promise((resolve, reject) => {
             sql.query("UPDATE CartItem  as cart set cart.quantity  = ? , cart.cartID = ? where cart.id = ?", [cartUpdate.quantity, cartUpdate.cartID, cartUpdate.id], (err, res) => {
                 if (err) {
@@ -166,19 +166,7 @@ class CartItemDAO {
         })
 
     };
-    getAllOrderByCustomerId = (customerID) => {
-        return new Promise((resolve, reject) => {
-            sql.query("SELECT o.* FROM `Order` o left join Cart c on o.cartID = c.id where c.customerID = ?", [customerID], (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    reject(err);
-                    return;
-                }
-                resolve(res || []);
-            });
-        })
 
-    };
 }
 
-module.exports = new CartItemDAO()
+module.exports = new OrderDAO()

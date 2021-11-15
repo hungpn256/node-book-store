@@ -5,12 +5,13 @@ const Payment = require('../models/payment');
 const Shipment = require('../models/Shipment');
 const _ = require('lodash');
 const Order = require('../models/order');
-const CartDAO = require('../dao/CartDAO');
+const OrderDAO = require('../dao/OrderDAO');
+const CustomerDAO = require('../dao/CustomerDAO');
 exports.getCurrentCard = async (req, res) => {
     let card = null;
     try {
         const customer = req.customer;
-        card = await CartDAO.getCurrentCart(customer.id);
+        card = await OrderDAO.getCurrentCart(customer.id);
     } catch (err) {
         console.log('err', err);
         if (err.kind === 'not_found') {
@@ -19,7 +20,7 @@ exports.getCurrentCard = async (req, res) => {
         }
     }
     if (card !== null) {
-        let listItem = await CartDAO.getCardItemByCardID(card.id);
+        let listItem = await OrderDAO.getCartItemByCartID(card.id);
         card.listCartItem = listItem;
         res.send(card);
     } else {
@@ -28,38 +29,38 @@ exports.getCurrentCard = async (req, res) => {
 };
 
 exports.addToCart = async (req, res) => {
-    let card = null;
+    let cart = null;
     try {
         const customer = req.customer;
-        card = await CartDAO.getCurrentCart(customer.id);
+        cart = await OrderDAO.getCurrentCart(customer.id);
     } catch (err) {
         console.log('err', err);
         if (err.kind === 'not_found') {
-            card = new Card({ customerID: req.customer.id });
-            card = await CartDAO.createCart(card);
+            cart = new Card({ customerID: req.customer.id });
+            cart = await OrderDAO.createCart(cart);
         }
     }
-    if (card !== null) {
+    if (cart !== null) {
         const cartItem = req.body;
-        let cartExist = await CartDAO.checkCartExist(cartItem);
+        let cartExist = await OrderDAO.checkCartExist(cartItem);
         if (cartExist) {
             cartExist.quantity = cartExist.quantity + cartItem.quantity;
             console.log(cartExist);
-            await CartDAO.update(cartExist);
+            await OrderDAO.updateCartItem(cartExist);
         } else {
-            await CartDAO.create(req.body);
+            await OrderDAO.createCartItem(req.body);
         }
-        let listItem = await CartDAO.getCardItemByCardID(card.id);
-        card.listCartItem = listItem;
-        console.log(card);
-        res.send(card);
+        let listItem = await OrderDAO.getCartItemByCartID(cart.id);
+        cart.listCartItem = listItem;
+        console.log(cart);
+        res.send(cart);
     }
 };
 exports.getAllPayment = async (req, res) => {
     try {
         let id = req.query.id
         console.log(id);
-        let payments = await CartDAO.getAllPayment(id);
+        let payments = await OrderDAO.getAllPayment(id);
         res.send(payments)
     }
     catch (err) {
@@ -70,7 +71,7 @@ exports.getAllPayment = async (req, res) => {
 
 exports.getAllShipment = async (req, res) => {
     try {
-        let shipments = await CartDAO.getAllShipment();
+        let shipments = await OrderDAO.getAllShipment();
         res.send(shipments)
     }
     catch (err) {
@@ -84,17 +85,17 @@ exports.createOrder = async (req, res) => {
         const paymentID = req.body.paymentID;
         const shipmentID = req.body.shipmentID;
         const listCartPaid = req.body.listCartItem;
-        await CartDAO.updateStatusCart(cartID)
+        await OrderDAO.updateStatusCart(cartID)
         let newCart = new Card({ customerID: req.customer.id });
-        newCart = await CartDAO.createCart(newCart);
-        let listItem = await CartDAO.getCardItemByCardID(cartID);
+        newCart = await OrderDAO.createCart(newCart);
+        let listItem = await OrderDAO.getCartItemByCartID(cartID);
         const listCartItemAddNewCart = _.differenceBy(listItem, listCartPaid, 'id')
         await Promise.all(listCartItemAddNewCart.map(item => {
             item.cartID = newCart.id
-            return CartDAO.update(item)
+            return OrderDAO.updateCartItem(item)
         }))
         newCart.listCartItem = listItem
-        await CartDAO.createOrder({ cartID, paymentID, shipmentID, status: 'paid', dateCreat: new Date() })
+        await OrderDAO.createOrder({ cartID, paymentID, shipmentID, status: 'paid', dateCreat: new Date() })
         res.send({ cart: newCart })
     }
     catch (err) {
@@ -106,12 +107,12 @@ exports.createOrder = async (req, res) => {
 exports.getMyOrder = async (req, res) => {
     try {
         const customerID = req.customer.id
-        let result = await CartDAO.getAllOrderByCustomerId(customerID)
+        let result = await CustomerDAO.getAllOrderByCustomerId(customerID)
         const listCart = await Promise.all(result.map((item) => {
-            return CartDAO.getCardItemByCardID(item.cartID)
+            return OrderDAO.getCartItemByCartID(item.cartID)
         }))
         result = result.map((item, index) => {
-            const image = listCart[index][0].bookItem.image
+            const image = listCart[index]?.[0]?.bookItem?.image ?? ""
             const total = Math.round(listCart[index].reduce((sum, item) => sum + item.bookItem.price, 0))
             console.log(image, total);
             return {
