@@ -2,6 +2,7 @@ const Account = require("../models/account.js");
 const Address = require("../models/address.js");
 const Customer = require("../models/customer.js");
 const Fullname = require("../models/fullName.js");
+const CustomerDAO = require("../dao/CustomerDAO")
 const jwt = require('jsonwebtoken');
 const keys = require('../config/keys');
 
@@ -24,17 +25,17 @@ exports.create = async (req, res) => {
         // Save Customer in the database
         customer = await Customer.create(customer)
         let account = new Account({ ...req.body.account, customerID: customer.id })
-        account = await Account.create(account)
+        account = await CustomerDAO.createAccount(account)
         customer.account = account;
 
         let address = new Address({ ...req.body.address, customerID: customer.id })
         console.log(address)
-        address = await Address.create(address)
+        address = await CustomerDAO.createAddress(address)
         customer.address = address
 
         let fullName = new Fullname({ ...req.body.fullName, customerID: customer.id })
         console.log(fullName)
-        fullName = await Fullname.create(fullName)
+        fullName = await CustomerDAO.createFullName(fullName)
         customer.fullName = fullName
 
         res.send(customer)
@@ -55,11 +56,11 @@ exports.login = async (req, res) => {
         }
         let customer = {}
         let account = new Account({ username: req.body.username, password: req.body.password })
-        account = await Account.findByUserNamePassword(account)
-        customer = await Customer.findByCustomerID(account.customerID)
+        account = await CustomerDAO.findByUserNamePassword(account)
+        customer = await CustomerDAO.findCustomerByCustomerID(account.customerID)
 
-        let fullName = await Fullname.findByCustomerID(account.customerID)
-        let address = await Address.findByCustomerID(account.customerID)
+        let fullName = await CustomerDAO.findFullNameByCustomerID(account.customerID)
+        let address = await CustomerDAO.findAddressByCustomerID(account.customerID)
         customer.address = address;
         customer.fullName = fullName;
         customer.account = account;
@@ -94,11 +95,11 @@ exports.getMe = async (req, res) => {
         }
         let customer = {}
         console.log(req.customer.account.id, 'ád')
-        const account = await Account.findByID(req.customer.account.id)
-        customer = await Customer.findByCustomerID(account.customerID)
+        const account = await CustomerDAO.findAccountByID(req.customer.account.id)
+        customer = await CustomerDAO.findCustomerByCustomerID(account.customerID)
 
-        let fullName = await Fullname.findByCustomerID(account.customerID)
-        let address = await Address.findByCustomerID(account.customerID)
+        let fullName = await CustomerDAO.findFullNameByCustomerID(account.customerID)
+        let address = await CustomerDAO.findAddressByCustomerID(account.customerID)
         customer.address = address;
         customer.fullName = fullName;
         customer.account = account;

@@ -1,8 +1,11 @@
-const BookItem = require('../models/bookItem.js')
+const BookDAO = require('../dao/BookDAO.js');
+const BookItem = require('../models/bookItem.js');
+const { search } = require('../routes/book.js');
 exports.getAll = async (req, res) => {
+    const key = req.query.key || '';
     try {
         // Validate request
-        const data = await BookItem.getAll();
+        const data = await BookDAO.getAll(key);
         res.send(data)
     }
     catch (err) {
@@ -14,7 +17,7 @@ exports.getAll = async (req, res) => {
 exports.getItemById = async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        const data = await BookItem.getById(id)
+        const data = await BookDAO.getById(id)
         res.send(data)
     }
     catch (err) {

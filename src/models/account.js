@@ -1,53 +1,12 @@
 const sql = require("../db/index");
-function Account(account) {
-    this.customerID = account.customerID
-    this.username = account.username;
-    this.password = account.password;
+class Account {
+    customerID;
+    username;
+    password;
+    constructor(account) {
+        this.customerID = account.customerID
+        this.username = account.username;
+        this.password = account.password;
+    }
 }
-Account.create = (account) => {
-    return new Promise((resolve, reject) => {
-        sql.query("INSERT INTO Account (customerID,username,password) VALUES (?,?,?)", [account.customerID, account.username, account.password], (err, res) => {
-            if (err) {
-                console.log("error: ", err);
-                reject(err, null);
-            }
-
-            console.log("created customer: ", { ...account, id: res.insertId });
-            resolve({ ...account, id: res.insertId });
-        });
-    })
-
-};
-Account.findByUserNamePassword = (account) => {
-    return new Promise((resolve, reject) => {
-        sql.query("SELECT * FROM Account WHERE username = ? AND password = ?", [account.username, account.password], (err, res) => {
-            if (err) {
-                console.log("error: ", err);
-                reject(err);
-            }
-            if (res.length) {
-                console.log("found customer: ", res[0]);
-                resolve(res[0]);
-            }
-            reject({ kind: "not_found" });
-        });
-    })
-
-};
-Account.findByID = (id) => {
-    return new Promise((resolve, reject) => {
-        sql.query("SELECT * FROM Account WHERE id = ?", [id], (err, res) => {
-            if (err) {
-                console.log("error: ", err);
-                reject(err);
-            }
-            if (res.length) {
-                console.log("found customer: ", res[0]);
-                resolve(res[0]);
-            }
-            reject({ kind: "not_found" });
-        });
-    })
-
-};
 module.exports = Account;
