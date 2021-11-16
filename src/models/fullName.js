@@ -1,5 +1,5 @@
 const Fullname = function (fullName) {
-    console.log("fullName", fullName);
+    this.id = fullName.id;
     this.customerID = fullName.customerID;
     this.firstName = fullName.firstName;
     this.midName = fullName.midName;
