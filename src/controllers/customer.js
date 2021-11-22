@@ -21,7 +21,7 @@ exports.create = async (req, res) => {
         });
 
         // Save Customer in the database
-        customer = await Customer.create(customer)
+        customer = await CustomerDAO.createCustomer(customer)
         let account = new Account({ ...req.body.account, customerID: customer.id })
         account = await CustomerDAO.createAccount(account)
         customer.account = account;
