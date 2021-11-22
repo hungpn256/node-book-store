@@ -8,6 +8,9 @@ var indexRouter = require('./src/routes/index');
 var authRouter = require('./src/routes/auth');
 var bookRouter = require('./src/routes/book');
 var orderRouter = require('./src/routes/order');
+var electronicRouter = require('./src/routes/electronic');
+var shoesRouter = require('./src/routes/shoes');
+var clothesRouter = require('./src/routes/clothes');
 var cors = require('cors');
 // const connect = require('./src/db/index');
 var app = express();
@@ -27,6 +30,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
 app.use('/book', bookRouter);
+app.use('/electronic', electronicRouter);
+app.use('/shoes', shoesRouter);
+app.use('/clothes', clothesRouter);
 app.use('/order', orderRouter);
 
 // catch 404 and forward to error handler

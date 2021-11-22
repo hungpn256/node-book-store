@@ -16,7 +16,7 @@ exports.getCurrentCard = async (req, res) => {
         console.log('err', err);
         if (err.kind === 'not_found') {
             card = new Card({ customerID: req.customer.id });
-            card = await Card.create(card);
+            card = await OrderDAO.createCart(card);
         }
     }
     if (card !== null) {
